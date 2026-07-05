@@ -1,0 +1,14 @@
+{
+  "1": {
+    "class_type": "KokoroGenerate",
+    "inputs": {
+      "text": "$PROMPT",
+      "voice": "$VOICE",
+      "speed": 1.0
+    }
+  },
+  "2": {
+    "class_type": "SaveAudio",
+    "inputs": { "filename_prefix": "gen", "audio": ["1", 0] }
+  }
+}

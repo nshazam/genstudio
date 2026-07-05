@@ -1,0 +1,45 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "ltx-video-2b-v0.9.5.safetensors" }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": { "clip_name": "t5xxl_fp8_e4m3fn.safetensors", "type": "ltxv" }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "$PROMPT", "clip": ["2", 0] }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "low quality, worst quality, blurry, jpeg artifacts", "clip": ["2", 0] }
+  },
+  "5": {
+    "class_type": "EmptyLTXVLatentVideo",
+    "inputs": { "width": $WIDTH, "height": $HEIGHT, "length": $FRAMES, "batch_size": 1 }
+  },
+  "6": {
+    "class_type": "LTXVConditioning",
+    "inputs": { "positive": ["3", 0], "negative": ["4", 0], "frame_rate": 24.0 }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": $SEED, "steps": 30, "cfg": 3.0,
+      "sampler_name": "euler", "scheduler": "normal", "denoise": 1.0,
+      "model": ["1", 0], "positive": ["6", 0], "negative": ["6", 1], "latent_image": ["5", 0]
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["7", 0], "vae": ["1", 2] }
+  },
+  "9": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["8", 0], "frame_rate": 24, "format": "video/h264-mp4",
+      "filename_prefix": "gen", "pingpong": false, "save_output": true
+    }
+  }
+}

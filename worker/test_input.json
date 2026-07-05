@@ -1,0 +1,7 @@
+{
+  "input": {
+    "modality": "image",
+    "prompt": "a red fox in fresh snow, cinematic lighting, sharp focus",
+    "params": { "width": 1024, "height": 1024, "seed": 42 }
+  }
+}
