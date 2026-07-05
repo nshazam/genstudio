@@ -42,11 +42,12 @@ def _start_comfy():
     print("ComfyUI failed to start")
 
 
-def _apply_params(wf, prompt, params):
-    raw = json.dumps(wf)
+def _apply_params(raw, prompt, params):
+    # Workflow files are TEMPLATES: numeric tokens ($WIDTH/$FRAMES) sit bare (unquoted),
+    # so they are not valid JSON until substituted. Replace on the raw text, THEN parse.
     seed = params.get("seed") or int.from_bytes(os.urandom(4), "big")
     repl = {
-        "$PROMPT": prompt.replace('"', "'"),
+        "$PROMPT": prompt.replace('"', "'").replace("\n", " "),
         "$SEED": str(seed),
         "$WIDTH": str(params.get("width", 1024)),
         "$HEIGHT": str(params.get("height", 1024)),
@@ -60,7 +61,7 @@ def _apply_params(wf, prompt, params):
 
 def _run(modality, prompt, params):
     with open(os.path.join(WORKFLOW_DIR, f"{modality}.json")) as f:
-        wf = _apply_params(json.load(f), prompt, params)
+        wf = _apply_params(f.read(), prompt, params)
 
     client_id = str(uuid.uuid4())
     body = json.dumps({"prompt": wf, "client_id": client_id}).encode()
