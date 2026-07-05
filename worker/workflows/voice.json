@@ -1,14 +1,14 @@
 {
   "1": {
-    "class_type": "KokoroGenerate",
-    "inputs": {
-      "text": "$PROMPT",
-      "voice": "$VOICE",
-      "speed": 1.0
-    }
+    "class_type": "KokoroSpeaker",
+    "inputs": { "speaker_name": "$VOICE" }
   },
   "2": {
+    "class_type": "KokoroGenerator",
+    "inputs": { "text": "$PROMPT", "speaker": ["1", 0], "speed": 1.0, "lang": "English" }
+  },
+  "3": {
     "class_type": "SaveAudio",
-    "inputs": { "filename_prefix": "gen", "audio": ["1", 0] }
+    "inputs": { "audio": ["2", 0], "filename_prefix": "gen" }
   }
 }
