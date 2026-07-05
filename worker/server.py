@@ -13,7 +13,7 @@ instance stays warm.
 
   GET /health -> 200 once ComfyUI answers (used by Cloud Run startup probe).
 """
-import json, os, time, uuid, base64, subprocess, threading, urllib.request, urllib.parse
+import sys, json, os, time, uuid, base64, subprocess, threading, urllib.request, urllib.parse
 import websocket  # websocket-client
 from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel
@@ -27,8 +27,9 @@ _ready = threading.Event()
 
 
 def _start_comfy():
+    # base image exposes python3, not "python"; use the running interpreter
     subprocess.Popen(
-        ["python", "/ComfyUI/main.py", "--listen", "127.0.0.1", "--port", "8188"],
+        [sys.executable, "/ComfyUI/main.py", "--listen", "127.0.0.1", "--port", "8188"],
         cwd="/ComfyUI",
     )
     for _ in range(600):  # model load on GPU can be slow on cold start

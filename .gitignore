@@ -6,3 +6,4 @@ node_modules/
 *.pth
 *.bin
 __pycache__/
+.worker_secret

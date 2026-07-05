@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir fastapi "uvicorn[standard]" requests websocket-cl
 # --- Model download at BUILD time (bake into image so cold start is fast) ---
 # NOTE: models are large. For dev, comment these out and use a Runpod network volume instead.
 COPY download_models.sh /download_models.sh
-RUN chmod +x /download_models.sh && /download_models.sh || echo "skip model bake - use network volume"
+RUN chmod +x /download_models.sh && /download_models.sh
 
 # --- HTTP server (Cloud Run) ---
 COPY server.py /server.py

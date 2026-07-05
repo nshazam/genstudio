@@ -1,0 +1,18 @@
+# Cache-aware build: reuse the (large, unchanged) model layer, only rebuild
+# from the changed COPY server.py layer onward. Much faster than a cold build.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        docker pull us-central1-docker.pkg.dev/errorboard/genstudio/worker:latest || true
+        docker build \
+          --cache-from us-central1-docker.pkg.dev/errorboard/genstudio/worker:latest \
+          -t us-central1-docker.pkg.dev/errorboard/genstudio/worker:latest .
+        docker push us-central1-docker.pkg.dev/errorboard/genstudio/worker:latest
+images:
+  - us-central1-docker.pkg.dev/errorboard/genstudio/worker:latest
+options:
+  machineType: E2_HIGHCPU_8
+timeout: 1800s
