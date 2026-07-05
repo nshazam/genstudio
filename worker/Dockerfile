@@ -28,6 +28,14 @@ RUN pip install --no-cache-dir fastapi "uvicorn[standard]" requests websocket-cl
 COPY download_models.sh /download_models.sh
 RUN chmod +x /download_models.sh && /download_models.sh
 
+# --- Pin torch to a CUDA 12.1 build ---
+# Cloud Run's L4 host driver is CUDA 12.2; ComfyUI's requirements pull a cu124 torch
+# that fails with "driver too old". cu121 wheels run fine on the 12.2 driver.
+# Placed AFTER the model-download layer so that big layer stays cached on rebuild.
+RUN pip install --no-cache-dir --force-reinstall \
+    torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
+    --index-url https://download.pytorch.org/whl/cu121
+
 # --- HTTP server (Cloud Run) ---
 COPY server.py /server.py
 COPY workflows /workflows
